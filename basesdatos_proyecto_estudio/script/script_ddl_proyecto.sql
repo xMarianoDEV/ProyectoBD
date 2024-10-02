@@ -200,7 +200,7 @@ CHECK (nombre_apellido LIKE '%[A-Za-zÑñÁÉÍÓÚáéíóú ]%' and nombre_ape
 go
 
 --Restriccion para correo electronico valido de clientes
-ALTER TABLE VENDEDOR
+ALTER TABLE CLIENTE
 ADD CONSTRAINT CK_cliente_email
 CHECK (
     email LIKE '%_@__%.__%' 
