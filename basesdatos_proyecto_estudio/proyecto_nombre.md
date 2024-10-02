@@ -7,10 +7,12 @@
 **Asignatura**: Bases de Datos I (FaCENA-UNNE)
 
 **Integrantes**:
-    - Duete, Facundo 
-    - López, Maximiliano
-    - Maidana, Matias
-    - Stemberg Mariano
+
+    - Duete, Facundo<br>
+    - López, Maximiliano<br>
+    - Maidana, Matias<br>
+    - Stemberg Mariano<br>
+    
 **Año**: 2024
 
 ## CAPÍTULO I: INTRODUCCIÓN
