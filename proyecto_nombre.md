@@ -64,7 +64,7 @@ PRODUCT-CATEGORY  ||--|{  PRODUCT  : contains
 PRODUCT  ||--o{  ORDER-ITEM  : "ordered in"
 ```
 ### Diagrama relacional
-![diagrama_relacional](https://github.com/xMarianoDEV/ProyectoBD/blob/main/basesdatos_proyecto_estudio/doc/image_relational.png)
+![diagrama_relacional](https://github.com/xMarianoDEV/ProyectoBD/blob/main/doc/image_relational.png)
 
 ### Diccionario de datos
 
