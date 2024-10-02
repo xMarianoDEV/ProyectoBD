@@ -2,26 +2,25 @@
     
 **Estructura del documento principal:**
 
-# PRESENTACIÓN (Título/Nombre Proyecto)
+# PRESENTACIÓN (Marketplace)
 
 **Asignatura**: Bases de Datos I (FaCENA-UNNE)
 
 **Integrantes**:
- - Sed vel lectus nec lectus placerat laoreet et sed est.
- - Sed ac justo ac mauris porttitor convallis non sit amet felis.
- - In tincidunt augue sed molestie malesuada.
-
+    - Duete, Facundo 
+    - López, Maximiliano
+    - Maidana, Matias
+    - Stemberg Mariano
 **Año**: 2024
 
 ## CAPÍTULO I: INTRODUCCIÓN
 
 ### Caso de estudio
 
-Maecenas molestie lacus tincidunt, placerat dolor et, ullamcorper erat. Mauris tortor nisl, ultricies ac scelerisque nec, feugiat in nibh. 
-
+**Desarrollo y Gestión de una Base de Datos Relacional para un Marketplace en Línea**
 ### Definición o planteamiento del problema
 
-Pellentesque interdum aliquam magna sit amet rutrum. Nulla aliquam ligula nec quam iaculis dictum. In cursus aliquam cursus. Nullam a sem vel sapien iaculis finibus. Donec aliquam dictum viverra. Etiam ut orci lacus.
+El problema principal que aborda este trabajo práctico es cómo diseñar una base de datos que permita gestionar eficientemente un mercado en línea, donde se registran diferentes tipos de actores (vendedores, clientes, productos, materiales, medios de pago, etc.) y operaciones relacionadas (ventas, pagos, reseñas, etc.). La problemática se centra en garantizar que la información almacenada sea coherente, íntegra y permita realizar consultas rápidas y seguras.
 
 ## CAPITULO II: MARCO CONCEPTUAL O REFERENCIAL
 
