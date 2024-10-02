@@ -8,7 +8,7 @@
 - Duete, Facundo<br>
 - López, Maximiliano<br>
 - Maidana, Matias<br>
-- Stemberg Mariano<br>
+- Stemberg, Mariano<br>
 
 **Año**: 2024
 
