@@ -15,7 +15,7 @@ CREATE TABLE vendedor
   nombre_apellido VARCHAR(100) NOT NULL,
   fecha_nacimiento DATE NOT NULL,
   email VARCHAR(100),
-  CONSTRAINT PK_vendedor_id PRIMARY KEY (cuit_vendedor),
+  CONSTRAINT UQ_vendedor_id UNIQUE (cuit_vendedor),
   CONSTRAINT UQ_vendedor_email UNIQUE (email),
   CONSTRAINT CK_vendedor_fecha_nacimiento CHECK ((DATEDIFF(YEAR, fecha_nacimiento, GETDATE()) >= 18) and (DATEDIFF(YEAR, fecha_nacimiento, GETDATE()) <= 100))
 );
@@ -179,12 +179,6 @@ CHECK (
     AND email NOT LIKE '%[^A-Za-z0-9@._-]%' 
     AND CHARINDEX(' ', email) = 0
 );
-go
-
---Restricción para nombres completos validos de vendedores
-ALTER TABLE VENDEDOR
-ADD CONSTRAINT CK_Vendedor_NombreApellido
-CHECK (nombre_apellido LIKE '%[A-Za-zÑñÁÉÍÓÚáéíóú ]%' and nombre_apellido NOT LIKE '%[^A-Za-zÑñÁÉÍÓÚáéíóú ]%')
 go
 
 --Restriccion para documentos validos de clientes
