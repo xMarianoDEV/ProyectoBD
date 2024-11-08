@@ -28,5 +28,5 @@ Un **backup en línea** es un **backup** que se realiza mientras la base de dato
 - Fundamento de backups en línea: Los backups en línea son fundamentales en escenarios de alta disponibilidad, como sistemas de banca, comercio electrónico, y cualquier aplicación de misión crítica donde se requiere disponibilidad continua.
 
 ## En conclusion
-Podriamos decir que el **backup en línea ** es Ideal para entornos de alta disponibilidad o producción, donde el acceso continuo es esencial. 
+Podriamos decir que el **backup en línea** es Ideal para entornos de alta disponibilidad o producción, donde el acceso continuo es esencial. 
 Por otro lado, el **backup común** es mayormente enfocado en escenarios donde se pueden programar mantenimientos, como entornos de desarrollo o pruebas.
