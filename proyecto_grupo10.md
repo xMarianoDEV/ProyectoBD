@@ -167,6 +167,45 @@ La optimización de consultas a través de índices es esencial para mantener un
 
 
 **TEMA 4:** Backup y restore. Backup en línea <br>
+Un **backup** (o copia de seguridad) es una duplicación de los datos de una base de datos u otro sistema, almacenada en un medio de almacenamiento separado para proteger la información contra pérdidas accidentales, fallos del sistema, corrupción de datos o desastres. Los backups permiten restaurar los datos a un estado anterior, asegurando la continuidad de las operaciones y minimizando la pérdida de información.
+
+Para realizar un backup, primero debemos establecer el modelo de recuperación en **"Full"** para registrar todas las transacciones y permitir restauraciones detalladas.
+
+`USE ProyectoBD ALTER DATABASE ProyectoBD SET RECOVERY FULL;`
+
+A continuación, se realiza un backup completo de la base de datos. En este caso, creamos un procedimiento almacenado que incluye la fecha y hora en el nombre del archivo, para registrar cuándo se ejecuta el procedimiento.
+
+`CREATE PROCEDURE BackupConFecha AS BEGIN DECLARE @fecha VARCHAR(MAX) = REPLACE(CONVERT(VARCHAR(19), GETDATE(), 120), ':', '-'); DECLARE @ruta VARCHAR(MAX) = 'C:\ProyectoBD\FULL\BackUpFull-' + @fecha + '.bak'; BACKUP DATABASE ProyectoBD TO DISK = @ruta WITH NOFORMAT, NAME = 'BackUps'; END;`
+
+Con el backup completo realizado, se pueden ejecutar diversas operaciones y registrar los cambios en archivos de logs. Para ello, creamos otro procedimiento almacenado que guarda los logs de manera similar al backup completo.
+
+
+`CREATE PROCEDURE BackUpLog @nombreArchivo varchar(50) AS BEGIN DECLARE @fechaHoraLog VARCHAR(MAX) = REPLACE(CONVERT(VARCHAR(19), GETDATE(), 120), ':', '-'); DECLARE @rutaLog VARCHAR(MAX) = 'C:\ProyectoBD\LOG\'+ @nombreArchivo + '-' + @fechaHoraLog + '.trn';`
+
+`BACKUP LOG ProyectoBD TO DISK = @rutaLog WITH NOFORMAT, NOINIT,  NAME = N'LogBackUp-1', SKIP, NOREWIND, NOUNLOAD,  STATS = 10 END;`<br>
+
+**NOFORMAT** = Indica que el backup se agrega sin eliminar los backups anteriores.
+**NOINIT** = El backup se agrega al final de cualquier contenido existente en el medio, lo que permite mantener múltiples backups en un mismo archivo o dispositivo.
+**SKIP **= Permite que el backup se escriba sin importar si el contenido existente en el medio coincide con el nuevo backup.
+**NOREWIND**= Indica que después de que el backup se complete, el dispositivo (si es un dispositivo de cinta) no debe rebobinarse.
+**NOUNLOAD** = Evita que el dispositivo de backup se expulse o descargue después de que finalice el backup.
+**STATS 10** = Muestra mensajes de progreso en intervalos de cada 10% completado. 	
+
+Una vez realizado el backup y los archivos de logs, es posible restaurarlos para recuperar datos que puedan haberse corrompido o perdido.
+
+Para realizar la restauración, primero cambiamos el contexto de la base de datos al sistema (master) para evitar conflictos durante el proceso. Utilizaremos el archivo de backup completo (.bak) y pondremos la base de datos en modo **NORECOVERY** para permitir la adición de logs posteriormente.
+
+`USE [master] ALTER DATABASE [ProyectoBD] SET SINGLE_USER WITH ROLLBACK IMMEDIATE RESTORE DATABASE [ProyectoBD] FROM  DISK = N'C:\ProyectoBD\FULL\BackUpFull-2024-11-08 12-50-52.bak' WITH  FILE = 1,  NORECOVERY,  NOUNLOAD,  REPLACE,  STATS = 5` <br>
+
+En este caso utilizamos el modo **NORECOVERY** para indicar que pueden añadirse logs. Ademas, dejamos la base de datos en modo de un unico usuario y con rollback inmediato, que libera la base de datos de posibles bloqueos o accesos que impidan la restauración.
+
+Ahora, se restaura el primer log backup y se coloca en modo **RECOVERY** para hacer la base de datos accesible y verificar los datos.
+
+`RESTORE LOG [ProyectoBD] FROM  DISK = N'C:\ProyectoBD\LOG\LogBackup1-2024-11-08 12-51-20.trn' WITH  FILE = 1,  NOUNLOAD,  STATS = 10` 
+
+Se vuelve a poner la base de datos en modo de multiples usuarios y luego, ya estaria finalizado el proceso de **Restore**.
+`USE [master] ALTER DATABASE [ProyectoBD] SET MULTI_USER`
+
 
 ## CAPÍTULO III: METODOLOGÍA SEGUIDA
 
