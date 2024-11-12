@@ -59,39 +59,40 @@ donde se esta creando un rol llamado lectura que permitirá la lectura solo de l
 
 donde al usuario llamado UsuarioRolLectura se le está asignando el rol Lectura junto con todos sus permisos.
 
+##
 ## TEMA 2: Procedimientos y funciones almacenadas <br>
 
 Los procedimientos y funciones almacenadas en una base de datos permiten encapsular lógica y operaciones, optimizando el rendimiento y la seguridad al ejecutar comandos en el servidor. A diferencia de las consultas directas, los procedimientos almacenados son bloques de código que realizan acciones específicas sobre la base de datos, como operaciones de inserción, actualización, eliminación o consultas complejas. 
 
-# Para crear un procedimiento almacenado, se utiliza la siguiente sintaxis:
+**Para crear un procedimiento almacenado, se utiliza la siguiente sintaxis:**
 
-`CREATE PROCEDURE nombre_procedimiento  
-AS  
-BEGIN  
-   -- Código SQL  
-END`
+    `CREATE PROCEDURE nombre_procedimiento  
+        AS  
+        BEGIN  
+       -- Código SQL  
+        END`
 
 - Por ejemplo, un procedimiento para insertar un nuevo cliente podría escribirse así:
 
-`EXEC InsertarCliente 'Juan', 'Perez', '123456789';`
+    `EXEC InsertarCliente 'Juan', 'Perez', '123456789';`
 
 Por otro lado, las funciones almacenadas permiten realizar cálculos y devolver un valor, aunque no pueden modificar datos directamente como los procedimientos. Estas pueden ser escalar, retornando un solo valor, o de tabla, devolviendo un conjunto de filas. 
 
-# Un ejemplo de función escalar sería:
+**Un ejemplo de función escalar sería:**
 
-`CREATE FUNCTION CalcularEdad (@FechaNacimiento DATE)  
-RETURNS INT  
-AS  
-BEGIN  
-   DECLARE @Edad INT;  
-   SET @Edad = DATEDIFF(YEAR, @FechaNacimiento, GETDATE());  
-   RETURN @Edad;  
-END`
+    `CREATE FUNCTION CalcularEdad (@FechaNacimiento DATE)  
+        RETURNS INT  
+        AS  
+         BEGIN  
+           DECLARE @Edad INT;  
+           SET @Edad = DATEDIFF(YEAR, @FechaNacimiento, GETDATE());  
+           RETURN @Edad;  
+        END`
 
 Esta función calcula la edad a partir de la fecha de nacimiento proporcionada y retorna el valor. Las funciones se pueden utilizar dentro de consultas, por ejemplo:
 
-`SELECT Nombre, Apellido, dbo.CalcularEdad(FechaNacimiento) AS Edad  
-FROM Clientes;`
+    `SELECT Nombre, Apellido, dbo.CalcularEdad(FechaNacimiento) AS Edad  
+      FROM Clientes;`
 
 
 ##
