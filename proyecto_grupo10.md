@@ -60,7 +60,7 @@ donde se esta creando un rol llamado lectura que permitirá la lectura solo de l
 donde al usuario llamado UsuarioRolLectura se le está asignando el rol Lectura junto con todos sus permisos.
 
 **TEMA 2:** Procedimientos y funciones almacenadas <br>
-
+##
 ## TEMA 3: Optimización de consultas a través de índices <br>
 
 Los índices en bases de datos son estructuras de datos que mejoran la velocidad de las operaciones de recuperación de datos en una tabla a costa de espacio adicional y tiempos de actualización más largos. Utilizar índices correctamente puede hacer que las consultas se ejecuten mucho más rápido, mejorando así el rendimiento general de la base de datos.
