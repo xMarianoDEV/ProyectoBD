@@ -217,8 +217,8 @@ Se vuelve a poner la base de datos en modo de multiples usuarios y luego, ya est
 **a) Cómo se realizó el Trabajo Práctico:** 	Como se menciona en el capitulo I decidimos por realizar el caso de estudio sobre una base de datos relacional para un Marketplace en línea. Para organizarnos decidimos por dividir los temas de investigación y asignar uno a cada integrante. Aunque acordamos que, en caso de que haya dudas, nos consultaríamos entre nosotros para asegurar una comprensión clara y un mejor desarrollo del trabajo.
 Al finalizar los scripts SQL de los temas se realizaron varias pruebas y validaciones, ya sea con inserciones y consultas específicas, con el objeto de verificar que estén desarrollados de la manera correcta.
 Por último, se hizo la documentación de cada tema, incluyendo explicaciones detalladas del proceso de desarrollo, junto con ejemplos y demás para que sea lo más entendible posible.
-**b) Herramientas (Instrumentos y procedimientos):** 
 
+**b) Herramientas (Instrumentos y procedimientos):** 
  - **ERD Plus:** esta herramienta nos permitió crear y editar el modelo relacional de la base de datos, además de brindar la opción de exportar el mismo modelo.
  - **SQL Server:** esta herramienta nos permitió crear la base de datos, sus restricciones, índices, procedimientos almacenados, etc. Además de desarrollar y ejecutar los scripts del proyecto
  - **WhatsApp:** esta herramienta permitió mantener una comunicación constante entre los integrantes del grupo, permitiendo compartir ideas y resolver dudas acerca del proyecto.
