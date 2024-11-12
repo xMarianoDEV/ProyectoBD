@@ -165,8 +165,8 @@ Los índices deben mantenerse para garantizar un rendimiento óptimo. Algunas op
 
 La optimización de consultas a través de índices es esencial para mantener una base de datos eficiente y de alto rendimiento. Al entender y utilizar correctamente los índices, se puede mejorar significativamente el tiempo de respuesta de las consultas, asegurando que las aplicaciones que dependen de la base de datos funcionen de manera rápida y eficiente.
 
-
-**TEMA 4:** Backup y restore. Backup en línea <br>
+##
+## TEMA 4: Backup y restore. Backup en línea <br>
 Un **backup** (o copia de seguridad) es una duplicación de los datos de una base de datos u otro sistema, almacenada en un medio de almacenamiento separado para proteger la información contra pérdidas accidentales, fallos del sistema, corrupción de datos o desastres. Los backups permiten restaurar los datos a un estado anterior, asegurando la continuidad de las operaciones y minimizando la pérdida de información.
 
 Para realizar un backup, primero debemos establecer el modelo de recuperación en **"Full"** para registrar todas las transacciones y permitir restauraciones detalladas.
