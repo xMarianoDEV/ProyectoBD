@@ -61,7 +61,75 @@ donde al usuario llamado UsuarioRolLectura se le está asignando el rol Lectura 
 
 **TEMA 2:** Procedimientos y funciones almacenadas <br>
 
-**TEMA 3:** Optimización de consultas a través de índices <br>
+## TEMA 3: Optimización de consultas a través de índices <br>
+
+Los índices en bases de datos son estructuras de datos que mejoran la velocidad de las operaciones de recuperación de datos en una tabla a costa de espacio adicional y tiempos de actualización más largos. Utilizar índices correctamente puede hacer que las consultas se ejecuten mucho más rápido, mejorando así el rendimiento general de la base de datos.
+
+**¿Qué es un Índice?**
+Un índice es similar a un índice en un libro: permite localizar rápidamente la información sin necesidad de escanear toda la tabla. Los índices pueden ser creados en una o más columnas de una tabla y se utilizan principalmente para acelerar las consultas  `SELECT ` y para aplicar restricciones de unicidad.
+
+**Tipos de Índices**
+Índice Clustered: Reordena las filas de la tabla física para que coincidan con el orden del índice. Cada tabla puede tener solo un índice clustered, ya que define la estructura de almacenamiento de los datos de la tabla.
+
+**Índice Non-Clustered:** Crea una estructura separada de la tabla donde se almacena el valor de la clave de índice y un puntero a la fila de datos física. Una tabla puede tener múltiples índices non-clustered.
+
+**Índices Únicos:** Garantizan que los valores en el índice sean únicos, previniendo duplicados.
+
+**Creación de Índices**
+Para crear un índice en SQL Server, se utiliza la sentencia  `CREATE INDEX `. A continuación, algunos ejemplos de cómo crear índices:
+
+**Índice Clustered**
+-- Crear un índice clustered en la columna 'id_cliente' de la tabla 'cliente':
+
+      `CREATE CLUSTERED INDEX IX_Cliente_ID ON cliente (id_cliente); `
+
+**Índice Non-Clustered**
+-- Crear un índice non-clustered en la columna 'apellido' de la tabla 'cliente':
+
+      `CREATE NONCLUSTERED INDEX IX_Cliente_Apellido ON cliente (apellido); `
+
+**Índice Único**
+-- Crear un índice único en la columna 'email' de la tabla 'cliente':
+
+      `CREATE UNIQUE INDEX IX_Cliente_Email ON cliente (email); `
+
+**Optimización de Consultas**
+El uso de índices puede mejorar significativamente el rendimiento de las consultas. A continuación, se muestran algunos ejemplos de cómo las consultas pueden beneficiarse de los índices:
+
+**Consulta Sin Índice**
+-- Consulta sin índice en la columna 'apellido':
+
+     `SELECT * FROM cliente WHERE apellido = 'García'; `
+
+Esta consulta requerirá un escaneo completo de la tabla si no existe un índice en la columna apellido.
+
+**Consulta Con Índice**
+-- Consulta optimizada utilizando un índice en la columna 'apellido':
+
+     `CREATE NONCLUSTERED INDEX IX_Cliente_Apellido ON cliente (apellido);
+      SELECT * FROM cliente WHERE apellido = 'García';  `
+
+Con el índice  `IX_Cliente_Apellido `, SQL Server puede localizar rápidamente las filas donde apellido es 'García', evitando un escaneo completo de la tabla.
+
+**Mantenimiento de Índices**
+Los índices deben mantenerse para garantizar un rendimiento óptimo. Algunas operaciones de mantenimiento incluyen:
+
+**Reorganización de Índices:** Reorganiza las páginas del índice en orden lógico. Esto es menos intensivo que la reconstrucción completa y puede realizarse más frecuentemente.
+
+**Reconstrucción de Índices:** Reconstruye completamente el índice, eliminando la fragmentación. Esto es más intensivo pero puede ser necesario para índices altamente fragmentados.
+
+**Reorganización de Índices**
+-- Reorganizar un índice específico:
+
+      `ALTER INDEX IX_Cliente_Apellido ON cliente REORGANIZE; `
+
+**Reconstrucción de Índices**
+-- Reconstruir un índice específico:
+
+      `ALTER INDEX IX_Cliente_Apellido ON cliente REBUILD; `
+
+La optimización de consultas a través de índices es esencial para mantener una base de datos eficiente y de alto rendimiento. Al entender y utilizar correctamente los índices, se puede mejorar significativamente el tiempo de respuesta de las consultas, asegurando que las aplicaciones que dependen de la base de datos funcionen de manera rápida y eficiente.
+
 
 **TEMA 4:** Backup y restore. Backup en línea <br>
 
