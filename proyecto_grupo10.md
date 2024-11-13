@@ -227,6 +227,135 @@ Por último, se hizo la documentación de cada tema, incluyendo explicaciones de
 
 ## CAPÍTULO IV: DESARROLLO DEL TEMA / PRESENTACIÓN DE RESULTADOS
 
+### TEMA 1: Manejo de permisos a nivel de usuarios de base de datos
+
+**Descripción:**
+El manejo de permisos en bases de datos es fundamental para controlar el acceso de los usuarios y sus capacidades dentro de la base de datos. Esto asegura que solo los usuarios autorizados puedan realizar ciertas acciones, como leer, escribir o modificar datos.
+
+**Ejemplo 1:** Creación de un Usuario y Asignación de Permisos
+**1- Creación de un Login y Usuario:**
+
+    `CREATE LOGIN [UsuarioAdmin] WITH PASSWORD=N'123', DEFAULT_DATABASE=[ProyectoBD], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF;`
+
+-- Crear un usuario en la base de datos
+
+     `CREATE USER [Usuario] FOR LOGIN [UsuarioAdmin];`
+
+**2- Asignación de Permisos:**
+-- Conceder permisos de lectura en la tabla 'Titles'
+
+    `GRANT SELECT ON Titles TO [Usuario];`
+
+-- Conceder permisos de inserción en la tabla 'Directors'
+
+    `GRANT INSERT ON Directors TO [Usuario];`
+ **Resultado:** El usuario Usuario ahora tiene permisos para realizar consultas (SELECT) sobre la tabla Titles y para insertar datos en la tabla Directors, pero no podrá modificar ni eliminar registros.
+
+ **Ejemplo 2: Uso de Roles**
+ -- Crear un rol llamado 'Lectura' que tendrá permisos de selección sobre la tabla 'Titles'
+ 
+    `CREATE ROLE [Lectura];
+        GRANT SELECT ON Titles TO [Lectura];`
+
+-- Asignar el rol 'Lectura' al usuario 'Usuario'
+
+    `ALTER ROLE [Lectura] ADD MEMBER [Usuario];`
+**Resultado:** El rol Lectura garantiza que cualquier usuario que sea miembro de este rol solo pueda leer los datos de la tabla Titles, lo que facilita la gestión de permisos para múltiples usuarios.
+
+
+
+### TEMA 2: Procedimientos y funciones almacenadas
+
+**Descripción:**
+Los procedimientos y funciones almacenadas son bloques de código SQL que se almacenan y ejecutan en el servidor de base de datos. Permiten encapsular lógica y reutilizarla de manera eficiente, mejorando el rendimiento y la seguridad al evitar la repetición de código en las aplicaciones.
+
+**Ejemplo 1:** Procedimiento Almacenado para Insertar un Director
+
+     `CREATE PROCEDURE InsertarDirector
+        @director_name VARCHAR(255)
+            AS
+            BEGIN
+         INSERT INTO Directors (director_name)
+        VALUES (@director_name);
+    END; `
+ **Resultado:** El procedimiento almacenado InsertarDirector permite agregar un nuevo director a la tabla Directors sin necesidad de escribir el código repetidamente en cada parte de la aplicación.
+
+**Ejemplo 2:** Función Almacenada para Contar el Número de Shows por Tipo
+
+    `CREATE FUNCTION ContarShowsPorTipo (@tipo_id INT)
+        RETURNS INT
+            AS
+            BEGIN
+        DECLARE @total_shows INT;
+        SELECT @total_shows = COUNT(*)
+        FROM Titles
+        WHERE tipo_id = @tipo_id;
+        RETURN @total_shows;
+    END;`
+    **Resultado:** La función ContarShowsPorTipo devuelve el número total de shows de un tipo específico en la base de datos. Esto es útil para obtener estadísticas rápidamente sobre el contenido disponible según su tipo.
+
+**Ejemplo 3:** Llamada a la Función para Mostrar el Conteo de Shows por Tipo
+
+    `SELECT tipo_id, dbo.ContarShowsPorTipo(tipo_id) AS TotalShows
+        FROM tipo;`
+**Resultado:** Esta consulta devuelve el número de shows por cada tipo de contenido, usando la función ContarShowsPorTipo. El resultado podría ser algo así:
+
+
+
+### TEMA 3: Optimización de consultas a través de índices
+
+**Descripción:**
+Los índices son estructuras que mejoran la velocidad de las operaciones de búsqueda en las tablas. Crear índices adecuados en las columnas que se utilizan con frecuencia en las consultas puede mejorar significativamente el rendimiento de la base de datos.
+
+**Ejemplo 1:** Creación de un Índice Clustered en la Columna show_id de la Tabla Titles
+
+    `CREATE CLUSTERED INDEX IX_Titles_ShowID ON Titles (show_id);`
+**Resultado:** La creación de un índice clustered en la columna show_id mejora el rendimiento de las consultas que busquen por este campo, ya que la tabla se organiza físicamente según esta columna.
+
+**Ejemplo 2:** Creación de un Índice Non-Clustered en la Columna title de la Tabla Titles
+
+    `CREATE NONCLUSTERED INDEX IX_Titles_Title ON Titles (title);`
+**Resultado:** El índice non-clustered sobre la columna title optimiza las consultas que filtran o buscan por el nombre del show, sin reorganizar físicamente la tabla.
+
+**Ejemplo 3:** Consulta con y sin Índice
+
+**1- Consulta sin Índice:**
+
+    `SELECT * FROM Titles WHERE title = 'Inception';`
+
+**2- Consulta con Índice:**
+
+    `CREATE NONCLUSTERED INDEX IX_Titles_Title ON Titles (title);
+        SELECT * FROM Titles WHERE title = 'Inception';`
+**Resultado:** Al usar el índice IX_Titles_Title, las consultas sobre la columna title se vuelven más rápidas, ya que el índice proporciona un acceso más eficiente a los datos.
+
+
+
+### TEMA 4: Backup y restore. Backup en línea
+
+**Descripción:**
+Los backups son esenciales para proteger los datos en caso de fallos del sistema o corrupción de la base de datos. Realizar backups de manera regular asegura que se pueda recuperar la información en caso de desastres. Los backups en línea permiten realizar respaldos sin interrumpir el servicio de la base de datos.
+
+**Ejemplo 1:** Procedimiento para Realizar un Backup Completo de la Base de Datos
+
+     `CREATE PROCEDURE BackupCompleto
+        AS
+        BEGIN
+        DECLARE @fecha VARCHAR(MAX) = REPLACE(CONVERT(VARCHAR(19), GETDATE(), 120), ':', '-');
+        DECLARE @ruta VARCHAR(MAX) = 'C:\Backups\ProyectoBD\BackUpFull-' + @fecha + '.bak';
+        BACKUP DATABASE ProyectoBD TO DISK = @ruta WITH NOFORMAT, INIT, NAME = 'Full Backup';
+    END; `
+**Resultado:** El procedimiento BackupCompleto realiza un backup completo de la base de datos y guarda el archivo con un nombre que incluye la fecha y hora, lo que facilita la organización y recuperación de las copias de seguridad.
+
+**Ejemplo 2:** Realizar un Restore de la Base de Datos
+
+    `RESTORE DATABASE ProyectoBD
+    FROM DISK = 'C:\Backups\ProyectoBD\BackUpFull-2024-11-11-12-34-56.bak'
+    WITH REPLACE;`
+**Resultado:** El comando RESTORE DATABASE recupera la base de datos desde el archivo de backup especificado, restaurando todos los datos a su estado en el momento en que se realizó el backup. El parámetro WITH REPLACE permite sobrescribir la base de datos actual.
+
+##
+
 ### Diagrama relacional
 ![diagrama_relacional](https://github.com/xMarianoDEV/ProyectoBD/blob/main/doc/image_relational.png)
 
