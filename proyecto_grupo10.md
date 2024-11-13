@@ -371,3 +371,6 @@ Fusce auctor finibus lectus, in aliquam orci fermentum id. Fusce sagittis lacus 
 [scripts-> tema_1](https://github.com/xMarianoDEV/ProyectoBD/tree/main/script/tema01_manejo_de_permisos_a_nivel_de_usuarios)
 
 ## CAPÍTULO V: CONCLUSIONES
+
+A lo largo de este trabajo de investigación sobre índices, manejo de permisos a nivel de usuario, procedimientos almacenados, y backup y restore en SQL Server, comprendimos cómo cada uno de estos elementos contribuye a la robustez y eficiencia de una base de datos. Los índices optimizan el acceso a datos y mejoran el rendimiento de consultas, mientras que el manejo de permisos garantiza la seguridad y control sobre los accesos. Los procedimientos almacenados permiten automatizar y simplificar operaciones complejas, promoviendo consistencia y eficiencia en el manejo de datos. Finalmente, el backup y restore son esenciales para la recuperación y protección de la información, ofreciendo una capa de seguridad ante posibles pérdidas de datos.  No obstante, estos temas no son los únicos que garantizan una base de datos sólida y eficiente. Otros aspectos, como los índices columnares, los triggers, y el manejo de transacciones, también juegan un papel fundamental. 
+En conjunto, todos estos elementos permiten una administración completa y efectiva, asegurando un sistema confiable y de alto rendimiento.
