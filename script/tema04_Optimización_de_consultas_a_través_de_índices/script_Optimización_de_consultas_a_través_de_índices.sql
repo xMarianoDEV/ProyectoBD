@@ -1,115 +1,82 @@
-USE ProyectoBD;
-GO
-
--- 1 Se realizará la carga masiva de datos sobre la tabla producto
-
+use ProyectoBD
+go
+--Se realizará la carga masiva de datos sobre la tabla vendedor
 DECLARE @contador INT = 1;
 WHILE @contador <= 1000000
 BEGIN
-    INSERT INTO producto (nombre, descripcion, precio, status_publicacion, id_categoria, cuit_vendedor)
+    INSERT INTO vendedor (cuit_vendedor, nombre_apellido, fecha_nacimiento, email)
     VALUES (
-        'Producto ' + CAST(@contador AS VARCHAR(10)),  -- nombre
-        'Descripción del Producto ' + CAST(@contador AS VARCHAR(10)), -- descripción
-        ROUND(RAND() * 1000, 2), -- precio aleatorio entre 0 y 1000
-        CASE WHEN @contador % 2 = 0 THEN 'activa' ELSE 'pausada' END, -- status_publicacion alternando entre 'activa' y 'pausada'
-        @contador % 10 + 1, -- id_categoria (tomando valores entre 1 y 10)
-        1000000000 + @contador -- cuit_vendedor (valor único)
+        1000000000 + @contador, -- cuit_vendedor, un valor único para cada registro
+        'Vendedor ' + CAST(@contador AS VARCHAR(10)), -- nombre_apellido
+        DATEADD(YEAR, -20 - (RAND() * 50), GETDATE()), -- fecha_nacimiento, fecha aleatoria entre 20 y 70 años atrás
+        CONCAT('vendedor', @contador, '@ejemplo.com') -- email, correo único para cada registro
     );
-
     SET @contador = @contador + 1;
 END;
-GO
-
--- Verificación de los datos cargados
-SELECT * FROM producto;
-GO
-
-    -- 2 Consulta sin índice
+go
+    
+select * from vendedor
+--Se realiza la busqueda por periodo sin indice;
+-- Consulta sin índice
 SET STATISTICS TIME ON;
-SELECT * FROM producto WHERE precio BETWEEN 100 AND 500;
+SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1980-01-01' AND '1990-12-31';
 SET STATISTICS TIME OFF;
+-- Plan de ejecución
+SET SHOWPLAN_TEXT ON;
+
 GO
-
-
--- Crear un índice agrupado sobre la columna 'precio'
-CREATE CLUSTERED INDEX idx_precio ON producto(precio);
+SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1990-01-01' AND '1990-12-31';
 GO
-
+    
+SET SHOWPLAN_TEXT OFF;
+--se consultan los indices de la tabla vendedor.
+execute sp_helpindex 'vendedor'
+--Se crea el indice agrupado sobre la columna fecha_nacimiento y se ejecuta la misma consulta.
+CREATE CLUSTERED INDEX idx_fecha_nacimiento ON vendedor(fecha_nacimiento);
 -- Consulta con índice agrupado
 SET STATISTICS TIME ON;
-SELECT * FROM producto WHERE precio BETWEEN 100 AND 500;
+SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1990-01-01' AND '1990-12-31';
 SET STATISTICS TIME OFF;
-GO
-
 -- Plan de ejecución con índice agrupado
 SET SHOWPLAN_TEXT ON;
 GO
-SELECT * FROM producto WHERE precio BETWEEN 100 AND 500;
-GO
-SET SHOWPLAN_TEXT OFF;
-GO
-
--- Eliminar el índice agrupado
-DROP INDEX idx_precio ON producto;
-GO
-
---3 Creación de índices no agrupados
     
--- Crear un índice no agrupado sobre la columna 'status_publicacion'
-CREATE NONCLUSTERED INDEX idx_status_publicacion ON producto(status_publicacion)
-INCLUDE (nombre, descripcion);
+SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1990-01-01' AND '1990-12-31';
 GO
-
--- Consulta con índice no agrupado
+    
+SET SHOWPLAN_TEXT OFF;
+--Se borra el indice creado
+DROP INDEX idx_fecha_nacimiento ON vendedor;
+--Se crea el indice agrupado compuesto en la tabla vendedor con todas sus columnas incluidas
+CREATE CLUSTERED INDEX idx_fecha_nacimiento_comp ON vendedor (fecha_nacimiento, cuit_vendedor, nombre_apellido, email);
+-- Consulta con índice agrupado compuesto
 SET STATISTICS TIME ON;
-SELECT * FROM producto WHERE status_publicacion = 'activa';
+SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1990-01-01' AND '1990-12-31';
 SET STATISTICS TIME OFF;
-GO
-
--- Plan de ejecución con índice no agrupado
+-- Plan de ejecución con índice agrupado compuesto
 SET SHOWPLAN_TEXT ON;
 GO
-SELECT * FROM producto WHERE status_publicacion = 'activa';
+    
+SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1990-01-01' AND '1990-12-31';
 GO
+    
 SET SHOWPLAN_TEXT OFF;
+--Se elimina el indice agrupado compuesto
+DROP INDEX idx_fecha_nacimiento_comp ON vendedor;
+--Se crea un indice no agrupado sobre la columna fecha_nacimiento que incluye a las demas columnas de la tabla vendedor
+CREATE NONCLUSTERED INDEX idx_fecha_nacimiento_incl ON vendedor (fecha_nacimiento)
+INCLUDE (cuit_vendedor, nombre_apellido, email);
+-- Consulta con índice no agrupado que incluye a las demás columnas
+SET STATISTICS TIME ON;
+SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1990-01-01' AND '1990-12-31';
+SET STATISTICS TIME OFF;
+-- Plan de ejecución con índice no agrupado que incluye a las demás columnas
+SET SHOWPLAN_TEXT ON;
 GO
-
-
--- Eliminar el índice no agrupado
-DROP INDEX idx_status_publicacion ON producto;
+    
+SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1990-01-01' AND '1990-12-31';
 GO
-
-
---4: Consultas con múltiples restricciones y claves foráneas
--- Insertar datos en la tabla 'venta'
-INSERT INTO venta (nro_venta, nro_factura, fecha_venta, dni)
-VALUES (1001, 5001, '2024-11-01', 12345678);
-GO
-
--- Consultar los datos insertados
-SELECT * FROM venta WHERE nro_venta = 1001;
-GO
-
--- Insertar datos en la tabla 'venta_detalle'
-INSERT INTO venta_detalle (cantidad, precio_venta, nro_venta, id_producto)
-VALUES (2, 150.00, 1001, 1);
-GO
-
--- Consultar los datos insertados en 'venta_detalle'
-SELECT * FROM venta_detalle WHERE nro_venta = 1001;
-GO
-
---5: Restricciones en las tablas
--- Intentar insertar un producto con un precio negativo
-INSERT INTO producto (nombre, descripcion, precio, status_publicacion, id_categoria, cuit_vendedor)
-VALUES ('Producto Test', 'Producto con precio negativo', -10, 'activa', 1, 1000000001);
-GO
-
-
---6: Validación de restricciones con expresiones regulares
-
--- Intentar insertar un cliente con un correo electrónico inválido
-INSERT INTO cliente (dni, nombre_apellido, domicilio, email, telefono, id_ciudad)
-VALUES (98765432, 'Juan Perez', 'Calle Ficticia 123', 'juanperez@', 123456789, 1);
-GO
-
+    
+SET SHOWPLAN_TEXT OFF;
+--Se elimina el indice no agrupado
+DROP INDEX idx_fecha_nacimiento_incl ON vendedor;
