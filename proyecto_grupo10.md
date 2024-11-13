@@ -262,7 +262,8 @@ El manejo de permisos en bases de datos es fundamental para controlar el acceso 
     `ALTER ROLE [Lectura] ADD MEMBER [Usuario];`
 **Resultado:** El rol Lectura garantiza que cualquier usuario que sea miembro de este rol solo pueda leer los datos de la tabla Titles, lo que facilita la gestión de permisos para múltiples usuarios.
 
-
+> Acceder a la siguiente carpeta para la descripción completa del tema
+[scripts-> tema_1](https://github.com/xMarianoDEV/ProyectoBD/tree/main/script/tema01_manejo_de_permisos_a_nivel_de_usuarios)
 
 ### TEMA 2: Procedimientos y funciones almacenadas
 
@@ -300,6 +301,8 @@ Los procedimientos y funciones almacenadas son bloques de código SQL que se alm
         FROM tipo;`
 **Resultado:** Esta consulta devuelve el número de shows por cada tipo de contenido, usando la función ContarShowsPorTipo. El resultado podría ser algo así:
 
+> Acceder a la siguiente carpeta para la descripción completa del tema
+[scripts-> tema_2](https://github.com/xMarianoDEV/ProyectoBD/tree/main/script/tema02_funciones_y_procedimientos_almacenados)
 
 
 ### TEMA 3: Optimización de consultas a través de índices
@@ -329,7 +332,8 @@ Los índices son estructuras que mejoran la velocidad de las operaciones de bús
         SELECT * FROM Titles WHERE title = 'Inception';`
 **Resultado:** Al usar el índice IX_Titles_Title, las consultas sobre la columna title se vuelven más rápidas, ya que el índice proporciona un acceso más eficiente a los datos.
 
-
+> Acceder a la siguiente carpeta para la descripción completa del tema
+[scripts-> tema_3](https://github.com/xMarianoDEV/ProyectoBD/tree/main/script/tema03_Backup_y_restore._Backup_en_l%C3%ADnea)
 
 ### TEMA 4: Backup y restore. Backup en línea
 
@@ -354,6 +358,9 @@ Los backups son esenciales para proteger los datos en caso de fallos del sistema
     WITH REPLACE;`
 **Resultado:** El comando RESTORE DATABASE recupera la base de datos desde el archivo de backup especificado, restaurando todos los datos a su estado en el momento en que se realizó el backup. El parámetro WITH REPLACE permite sobrescribir la base de datos actual.
 
+> Acceder a la siguiente carpeta para la descripción completa del tema
+[scripts-> tema_4](https://github.com/xMarianoDEV/ProyectoBD/tree/main/script/tema04_Optimizaci%C3%B3n_de_consultas_a_trav%C3%A9s_de_%C3%ADndices)
+
 ##
 
 ### Diagrama relacional
@@ -362,13 +369,6 @@ Los backups son esenciales para proteger los datos en caso de fallos del sistema
 ### Diccionario de datos
 
 Acceso al documento [PDF](doc/diccionario_datos.pdf) del diccionario de datos.
-
-### Desarrollo TEMA 1 "Manejo de permisos a nivel de usuario de Base de datos"
-
-Fusce auctor finibus lectus, in aliquam orci fermentum id. Fusce sagittis lacus ante, et sodales eros porta interdum. Donec sed lacus et eros condimentum posuere.
-
-> Acceder a la siguiente carpeta para la descripción completa del tema
-[scripts-> tema_1](https://github.com/xMarianoDEV/ProyectoBD/tree/main/script/tema01_manejo_de_permisos_a_nivel_de_usuarios)
 
 ## CAPÍTULO V: CONCLUSIONES
 
