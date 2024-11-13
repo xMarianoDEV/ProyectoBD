@@ -1,99 +1,115 @@
-use ProyectoBD
-go
+USE ProyectoBD;
+GO
 
---Se realizar· la carga masiva de datos sobre la tabla vendedor
+-- 1 Se realizar√° la carga masiva de datos sobre la tabla producto
 
 DECLARE @contador INT = 1;
 WHILE @contador <= 1000000
 BEGIN
-    INSERT INTO vendedor (cuit_vendedor, nombre_apellido, fecha_nacimiento, email)
+    INSERT INTO producto (nombre, descripcion, precio, status_publicacion, id_categoria, cuit_vendedor)
     VALUES (
-        1000000000 + @contador, -- cuit_vendedor, un valor ˙nico para cada registro
-        'Vendedor ' + CAST(@contador AS VARCHAR(10)), -- nombre_apellido
-        DATEADD(YEAR, -20 - (RAND() * 50), GETDATE()), -- fecha_nacimiento, fecha aleatoria entre 20 y 70 aÒos atr·s
-        CONCAT('vendedor', @contador, '@ejemplo.com') -- email, correo ˙nico para cada registro
+        'Producto ' + CAST(@contador AS VARCHAR(10)),  -- nombre
+        'Descripci√≥n del Producto ' + CAST(@contador AS VARCHAR(10)), -- descripci√≥n
+        ROUND(RAND() * 1000, 2), -- precio aleatorio entre 0 y 1000
+        CASE WHEN @contador % 2 = 0 THEN 'activa' ELSE 'pausada' END, -- status_publicacion alternando entre 'activa' y 'pausada'
+        @contador % 10 + 1, -- id_categoria (tomando valores entre 1 y 10)
+        1000000000 + @contador -- cuit_vendedor (valor √∫nico)
     );
 
     SET @contador = @contador + 1;
 END;
-go
+GO
 
-select * from vendedor
+-- Verificaci√≥n de los datos cargados
+SELECT * FROM producto;
+GO
 
---Se realiza la busqueda por periodo sin indice;
--- Consulta sin Ìndice
+    -- 2 Consulta sin √≠ndice
 SET STATISTICS TIME ON;
-SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1980-01-01' AND '1990-12-31';
+SELECT * FROM producto WHERE precio BETWEEN 100 AND 500;
 SET STATISTICS TIME OFF;
+GO
 
 
--- Plan de ejecuciÛn
+-- Crear un √≠ndice agrupado sobre la columna 'precio'
+CREATE CLUSTERED INDEX idx_precio ON producto(precio);
+GO
+
+-- Consulta con √≠ndice agrupado
+SET STATISTICS TIME ON;
+SELECT * FROM producto WHERE precio BETWEEN 100 AND 500;
+SET STATISTICS TIME OFF;
+GO
+
+-- Plan de ejecuci√≥n con √≠ndice agrupado
 SET SHOWPLAN_TEXT ON;
 GO
-SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1990-01-01' AND '1990-12-31';
+SELECT * FROM producto WHERE precio BETWEEN 100 AND 500;
 GO
 SET SHOWPLAN_TEXT OFF;
+GO
 
---se consultan los indices de la tabla vendedor.
-execute sp_helpindex 'vendedor'
+-- Eliminar el √≠ndice agrupado
+DROP INDEX idx_precio ON producto;
+GO
 
---Se crea el indice agrupado sobre la columna fecha_nacimiento y se ejecuta la misma consulta.
-CREATE CLUSTERED INDEX idx_fecha_nacimiento ON vendedor(fecha_nacimiento);
+--3 Creaci√≥n de √≠ndices no agrupados
+    
+-- Crear un √≠ndice no agrupado sobre la columna 'status_publicacion'
+CREATE NONCLUSTERED INDEX idx_status_publicacion ON producto(status_publicacion)
+INCLUDE (nombre, descripcion);
+GO
 
--- Consulta con Ìndice agrupado
+-- Consulta con √≠ndice no agrupado
 SET STATISTICS TIME ON;
-SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1990-01-01' AND '1990-12-31';
+SELECT * FROM producto WHERE status_publicacion = 'activa';
 SET STATISTICS TIME OFF;
+GO
 
-
--- Plan de ejecuciÛn con Ìndice agrupado
+-- Plan de ejecuci√≥n con √≠ndice no agrupado
 SET SHOWPLAN_TEXT ON;
 GO
-SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1990-01-01' AND '1990-12-31';
+SELECT * FROM producto WHERE status_publicacion = 'activa';
 GO
 SET SHOWPLAN_TEXT OFF;
-
---Se borra el indice creado
-DROP INDEX idx_fecha_nacimiento ON vendedor;
-
---Se crea el indice agrupado compuesto en la tabla vendedor con todas sus columnas incluidas
-CREATE CLUSTERED INDEX idx_fecha_nacimiento_comp ON vendedor (fecha_nacimiento, cuit_vendedor, nombre_apellido, email);
-
--- Consulta con Ìndice agrupado compuesto
-SET STATISTICS TIME ON;
-SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1990-01-01' AND '1990-12-31';
-SET STATISTICS TIME OFF;
-
-
--- Plan de ejecuciÛn con Ìndice agrupado compuesto
-SET SHOWPLAN_TEXT ON;
 GO
-SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1990-01-01' AND '1990-12-31';
+
+
+-- Eliminar el √≠ndice no agrupado
+DROP INDEX idx_status_publicacion ON producto;
 GO
-SET SHOWPLAN_TEXT OFF;
-
---Se elimina el indice agrupado compuesto
-DROP INDEX idx_fecha_nacimiento_comp ON vendedor;
-
---Se crea un indice no agrupado sobre la columna fecha_nacimiento que incluye a las demas columnas de la tabla vendedor
-CREATE NONCLUSTERED INDEX idx_fecha_nacimiento_incl ON vendedor (fecha_nacimiento)
-INCLUDE (cuit_vendedor, nombre_apellido, email);
-
--- Consulta con Ìndice no agrupado que incluye a las dem·s columnas
-SET STATISTICS TIME ON;
-SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1990-01-01' AND '1990-12-31';
-SET STATISTICS TIME OFF;
 
 
--- Plan de ejecuciÛn con Ìndice no agrupado que incluye a las dem·s columnas
-SET SHOWPLAN_TEXT ON;
+--4: Consultas con m√∫ltiples restricciones y claves for√°neas
+-- Insertar datos en la tabla 'venta'
+INSERT INTO venta (nro_venta, nro_factura, fecha_venta, dni)
+VALUES (1001, 5001, '2024-11-01', 12345678);
 GO
-SELECT * FROM vendedor WHERE fecha_nacimiento BETWEEN '1990-01-01' AND '1990-12-31';
+
+-- Consultar los datos insertados
+SELECT * FROM venta WHERE nro_venta = 1001;
 GO
-SET SHOWPLAN_TEXT OFF;
 
---Se elimina el indice no agrupado
-DROP INDEX idx_fecha_nacimiento_incl ON vendedor;
+-- Insertar datos en la tabla 'venta_detalle'
+INSERT INTO venta_detalle (cantidad, precio_venta, nro_venta, id_producto)
+VALUES (2, 150.00, 1001, 1);
+GO
+
+-- Consultar los datos insertados en 'venta_detalle'
+SELECT * FROM venta_detalle WHERE nro_venta = 1001;
+GO
+
+--5: Restricciones en las tablas
+-- Intentar insertar un producto con un precio negativo
+INSERT INTO producto (nombre, descripcion, precio, status_publicacion, id_categoria, cuit_vendedor)
+VALUES ('Producto Test', 'Producto con precio negativo', -10, 'activa', 1, 1000000001);
+GO
 
 
+--6: Validaci√≥n de restricciones con expresiones regulares
+
+-- Intentar insertar un cliente con un correo electr√≥nico inv√°lido
+INSERT INTO cliente (dni, nombre_apellido, domicilio, email, telefono, id_ciudad)
+VALUES (98765432, 'Juan Perez', 'Calle Ficticia 123', 'juanperez@', 123456789, 1);
+GO
 
