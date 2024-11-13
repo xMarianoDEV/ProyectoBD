@@ -242,25 +242,25 @@ El manejo de permisos en bases de datos es fundamental para controlar el acceso 
      `CREATE USER [Usuario] FOR LOGIN [UsuarioAdmin];`
 
 **2- Asignación de Permisos:**
--- Conceder permisos de lectura en la tabla 'Titles'
+-- Conceder permisos de lectura en la tabla cliente
 
-    `GRANT SELECT ON Titles TO [Usuario];`
+    `GRANT SELECT ON [dbo].[cliente] TO [Lectura];`
 
--- Conceder permisos de inserción en la tabla 'Directors'
+-- Conceder permisos de inserción en la tabla producto
 
-    `GRANT INSERT ON Directors TO [Usuario];`
- **Resultado:** El usuario Usuario ahora tiene permisos para realizar consultas (SELECT) sobre la tabla Titles y para insertar datos en la tabla Directors, pero no podrá modificar ni eliminar registros.
+    `GRANT INSERT ON producto TO [Usuario];`
+ **Resultado:**  El usuario "Usuario" ahora tiene permisos para realizar consultas (SELECT) sobre la tabla cliente y para insertar datos en la tabla producto, pero no podrá modificar ni eliminar registros.
 
  **Ejemplo 2: Uso de Roles**
- -- Crear un rol llamado 'Lectura' que tendrá permisos de selección sobre la tabla 'Titles'
+ -- Crear un rol llamado Lectura que tendrá permisos de selección sobre la tabla cliente
  
     `CREATE ROLE [Lectura];
-        GRANT SELECT ON Titles TO [Lectura];`
+        GRANT SELECT ON cliente TO [Lectura];`
 
--- Asignar el rol 'Lectura' al usuario 'Usuario'
+-- Asignar el rol Lectura al usuario Usuario'
 
     `ALTER ROLE [Lectura] ADD MEMBER [Usuario];`
-**Resultado:** El rol Lectura garantiza que cualquier usuario que sea miembro de este rol solo pueda leer los datos de la tabla Titles, lo que facilita la gestión de permisos para múltiples usuarios.
+**Resultado:** El rol Lectura garantiza que cualquier usuario miembro de este rol solo pueda leer datos de la tabla cliente, facilitando así la gestión de permisos para múltiples usuarios.
 
 > Acceder a la siguiente carpeta para la descripción completa del tema
 [scripts-> tema_1](https://github.com/xMarianoDEV/ProyectoBD/tree/main/script/tema01_manejo_de_permisos_a_nivel_de_usuarios)
@@ -270,36 +270,39 @@ El manejo de permisos en bases de datos es fundamental para controlar el acceso 
 **Descripción:**
 Los procedimientos y funciones almacenadas son bloques de código SQL que se almacenan y ejecutan en el servidor de base de datos. Permiten encapsular lógica y reutilizarla de manera eficiente, mejorando el rendimiento y la seguridad al evitar la repetición de código en las aplicaciones.
 
-**Ejemplo 1:** Procedimiento Almacenado para Insertar un Director
+**Ejemplo 1:** Este procedimiento almacenado inserta un nuevo vendedor en la tabla vendedor.
 
-     `CREATE PROCEDURE InsertarDirector
-        @director_name VARCHAR(255)
-            AS
-            BEGIN
-         INSERT INTO Directors (director_name)
-        VALUES (@director_name);
-    END; `
- **Resultado:** El procedimiento almacenado InsertarDirector permite agregar un nuevo director a la tabla Directors sin necesidad de escribir el código repetidamente en cada parte de la aplicación.
+     `CREATE PROCEDURE InsertarVendedor
+            @cuit_vendedor BIGINT,
+            @nombre_apellido VARCHAR(100),
+            @fecha_nacimiento DATE,
+            @email VARCHAR(100)
+        AS
+        BEGIN
+            INSERT INTO vendedor (cuit_vendedor, nombre_apellido, fecha_nacimiento, email)
+            VALUES (@cuit_vendedor, @nombre_apellido, @fecha_nacimiento, @email);
+        END;`
+ **Resultado:** El procedimiento almacenado InsertarVendedor permite agregar un nuevo vendedor a la tabla vendedor sin necesidad de escribir el código repetidamente en cada parte de la aplicación.
 
-**Ejemplo 2:** Función Almacenada para Contar el Número de Shows por Tipo
+**Ejemplo 2:** La función almacenada cuenta el número de productos que pertenecen a una categoría específica.
 
-    `CREATE FUNCTION ContarShowsPorTipo (@tipo_id INT)
-        RETURNS INT
-            AS
-            BEGIN
-        DECLARE @total_shows INT;
-        SELECT @total_shows = COUNT(*)
-        FROM Titles
-        WHERE tipo_id = @tipo_id;
-        RETURN @total_shows;
-    END;`
-    **Resultado:** La función ContarShowsPorTipo devuelve el número total de shows de un tipo específico en la base de datos. Esto es útil para obtener estadísticas rápidamente sobre el contenido disponible según su tipo.
+    `CREATE FUNCTION ContarProductosPorCategoria (@id_categoria INT)
+            RETURNS INT
+        AS
+        BEGIN
+            DECLARE @total_productos INT;
+            SELECT @total_productos = COUNT(*)
+            FROM producto
+            WHERE id_categoria = @id_categoria;
+            RETURN @total_productos;
+        END;`
+    **Resultado:**  Esta función devuelve el número total de productos asociados con una categoría específica, lo que ayuda a obtener estadísticas rápidas sobre el inventario por categoría.
 
-**Ejemplo 3:** Llamada a la Función para Mostrar el Conteo de Shows por Tipo
+**Ejemplo 3:** Consulta para utilizar la función ContarProductosPorCategoria y mostrar cuántos productos existen en cada categoría.
 
-    `SELECT tipo_id, dbo.ContarShowsPorTipo(tipo_id) AS TotalShows
-        FROM tipo;`
-**Resultado:** Esta consulta devuelve el número de shows por cada tipo de contenido, usando la función ContarShowsPorTipo. El resultado podría ser algo así:
+    `SELECT c.nombre, dbo.ContarProductosPorCategoria(c.id_categoria) AS TotalProductos
+     FROM categoria c;`
+**Resultado:** Esta consulta retorna el nombre de cada categoría junto con el total de productos asociados a ella, utilizando la función creada previamente.
 
 > Acceder a la siguiente carpeta para la descripción completa del tema
 [scripts-> tema_2](https://github.com/xMarianoDEV/ProyectoBD/tree/main/script/tema02_funciones_y_procedimientos_almacenados)
@@ -310,30 +313,30 @@ Los procedimientos y funciones almacenadas son bloques de código SQL que se alm
 **Descripción:**
 Los índices son estructuras que mejoran la velocidad de las operaciones de búsqueda en las tablas. Crear índices adecuados en las columnas que se utilizan con frecuencia en las consultas puede mejorar significativamente el rendimiento de la base de datos.
 
-**Ejemplo 1:** Creación de un Índice Clustered en la Columna show_id de la Tabla Titles
+**Ejemplo 1:** Creación de un Índice Clustered en la Columna id_producto de la Tabla producto
 
-    `CREATE CLUSTERED INDEX IX_Titles_ShowID ON Titles (show_id);`
-**Resultado:** La creación de un índice clustered en la columna show_id mejora el rendimiento de las consultas que busquen por este campo, ya que la tabla se organiza físicamente según esta columna.
+    `CREATE CLUSTERED INDEX IX_Producto_IdProducto ON producto (id_producto);`
+**Resultado:**  El índice IX_Producto_IdProducto organizará físicamente la tabla según la columna id_producto. Las búsquedas por id_producto serán más rápidas porque los datos estarán ordenados de acuerdo con este campo.
 
-**Ejemplo 2:** Creación de un Índice Non-Clustered en la Columna title de la Tabla Titles
+**Ejemplo 2:** Creación de un Índice Non-Clustered en la Columna nombre_apellido de la Tabla vendedor
 
-    `CREATE NONCLUSTERED INDEX IX_Titles_Title ON Titles (title);`
-**Resultado:** El índice non-clustered sobre la columna title optimiza las consultas que filtran o buscan por el nombre del show, sin reorganizar físicamente la tabla.
+    `CREATE NONCLUSTERED INDEX IX_Vendedor_NombreApellido ON vendedor (nombre_apellido);`
+**Resultado:** Este índice mejora las consultas que filtran por la columna nombre_apellido sin alterar el orden físico de los registros en la tabla. Las búsquedas de vendedores por nombre o apellido serán más eficientes.
 
-**Ejemplo 3:** Consulta con y sin Índice
+**Ejemplo 3:** Consulta con y sin Índice en la Tabla venta
 
-**1- Consulta sin Índice:**
+**1- Consulta sin Índice (Búsqueda por nro_venta):**
 
-    `SELECT * FROM Titles WHERE title = 'Inception';`
+    `SELECT * FROM venta WHERE nro_venta = 12345;`
 
 **2- Consulta con Índice:**
 
-    `CREATE NONCLUSTERED INDEX IX_Titles_Title ON Titles (title);
-        SELECT * FROM Titles WHERE title = 'Inception';`
-**Resultado:** Al usar el índice IX_Titles_Title, las consultas sobre la columna title se vuelven más rápidas, ya que el índice proporciona un acceso más eficiente a los datos.
+    `CREATE NONCLUSTERED INDEX IX_Venta_NroVenta ON venta (nro_venta);
+        SSELECT * FROM venta WHERE nro_venta = 12345;`
+**Resultado:**  Al utilizar el índice IX_Venta_NroVenta, las consultas por nro_venta serán mucho más rápidas, ya que SQL Server utilizará el índice para encontrar rápidamente los registros relacionados con el número de venta.
 
 > Acceder a la siguiente carpeta para la descripción completa del tema
-[scripts-> tema_3](https://github.com/xMarianoDEV/ProyectoBD/tree/main/script/tema03_Backup_y_restore._Backup_en_l%C3%ADnea)
+[scripts-> tema_3](https://github.com/xMarianoDEV/ProyectoBD/tree/main/script/tema04_Optimizaci%C3%B3n_de_consultas_a_trav%C3%A9s_de_%C3%ADndices)
 
 ### TEMA 4: Backup y restore. Backup en línea
 
@@ -359,7 +362,8 @@ Los backups son esenciales para proteger los datos en caso de fallos del sistema
 **Resultado:** El comando RESTORE DATABASE recupera la base de datos desde el archivo de backup especificado, restaurando todos los datos a su estado en el momento en que se realizó el backup. El parámetro WITH REPLACE permite sobrescribir la base de datos actual.
 
 > Acceder a la siguiente carpeta para la descripción completa del tema
-[scripts-> tema_4](https://github.com/xMarianoDEV/ProyectoBD/tree/main/script/tema04_Optimizaci%C3%B3n_de_consultas_a_trav%C3%A9s_de_%C3%ADndices)
+[scripts-> tema_4](https://github.com/xMarianoDEV/ProyectoBD/tree/main/script/tema03_Backup_y_restore._Backup_en_l%C3%ADnea)
+
 
 ##
 
